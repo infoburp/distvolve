@@ -58,7 +58,7 @@ vector<byte> dna()
   pushBackDimension(ret,(dimension*)&height);
   mPoly.lock();
   size_t ps = polys.size();
-  for(int i=4;i>0;i--)
+  for(int i=sizeof(int)-1;i>=0;i--)
     ret.push_back(((byte*)&ps)[i]);
   ret.insert(ret.end(),polys.begin(),polys.end());
   mPoly.unlock();
@@ -67,6 +67,7 @@ vector<byte> dna()
 
 void saveDna(string file)
 {
+  return;
   ofstream filestream(file,ofstream::trunc|ofstream::out|ofstream::binary);
   vector <byte> vDna = dna();
   filestream.write((char*)vDna.data(),vDna.size());
@@ -85,6 +86,7 @@ dimension readDimension(ifstream &filestream)
 
 int loadDna(string file)
 {
+  return 1;
   ifstream filestream(file,ifstream::in|ifstream::binary);
   byte magic;
   filestream.read((char*)&magic,1);
@@ -103,6 +105,15 @@ int loadDna(string file)
     cout << "Non matching dimensions!\n" ;
     return 1;
   }
+  while(!filestream.eof())
+  {
+    Polygon newPoly(width,height,filestream);
+    newPoly.drawInternal();
+    newPoly.drawOnFromDna(outputImage);
+    vector <byte> vNewPoly = newPoly.serialize();
+    polys.insert(polys.end(),vNewPoly.begin(),vNewPoly.end());
+  }
+  filestream.close();
   return 0;
 }
 

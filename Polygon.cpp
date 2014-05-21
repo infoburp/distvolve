@@ -13,6 +13,7 @@ using namespace distvolve;
 extern atomic<int> readingData;
 extern mutex writingData;
 void pushBackDimension(vector<byte> &ret,dimension *d);
+dimension readDimension(ifstream &filestream);
 
 void Image::set(std::vector<byte> data, dimension width, dimension height)
 {
@@ -30,18 +31,44 @@ dimension Polygon::random(dimension min,dimension max)
 vector<byte> Polygon::serialize()
 {
   vector<byte> r;
-  size_t ps = this->points.size();
-  for(int i=4;i>0;i--)
-    r.push_back(((byte*)&ps)[i]);
-  r.push_back(colour[0]);
-  r.push_back(colour[1]);
-  r.push_back(colour[2]);
-  r.push_back(colour[3]);
+  int ps = this->points.size();
+  for(int i=sizeof(int)-1;i>=0;i--)
+    r.push_back((byte)*(&ps+i));
+  r.push_back(this->colour[0]);
+  r.push_back(this->colour[1]);
+  r.push_back(this->colour[2]);
+  r.push_back(this->colour[3]);
   for(int i = 0; i<this->points.size();i++)
   {
-    pushBackDimension(r,this->points.data()+i);
+    pushBackDimension(r,&(this->points[i]));
   }
   return r;
+}
+
+Polygon::Polygon(dimension width,dimension height,ifstream &filestream)
+{
+  this->width = width;
+  this->height = height;
+
+  this->internalMask.resize(width*height,false);
+
+  this->points.resize(6,0);
+
+  size_t points=0;
+  for(size_t i=sizeof(int)-1;(int)i>=0;i--)
+  {
+    filestream.read((char*)&points+i,1);
+  }
+  points= points/sizeof(dimension);
+  cout << points << "\n";
+  filestream.read((char*)this->colour,1);
+  filestream.read((char*)this->colour+1,1);
+  filestream.read((char*)this->colour+2,1);
+  filestream.read((char*)this->colour+3,1);
+  for(int o=0;((int)points)>o;o++)
+    this->points[o]=readDimension(filestream);
+  this->centerx = (this->points[0]+this->points[2]+this->points[4])/3;
+  this->centery = (this->points[1]+this->points[3]+this->points[5])/3;
 }
 
 dimension rd(float a)
@@ -220,6 +247,33 @@ void Polygon::drawOn(Image &image,Image &from)
         colour[1]=r(((colour[1]*sa)+(this->colour[1]*da*(1-sa)))/a);
         colour[2]=r(((colour[2]*sa)+(this->colour[2]*da*(1-sa)))/a);
         colour[3]=r(a*255) ;
+      }
+    }
+  }
+};
+void Polygon::drawOnFromDna(Image &image)
+{
+  float sa = float(this->colour[3])/255.0;
+
+  for(size_t x=0;x<image.data.size();x+=4) {
+    if(this->internalMask[x/4])
+    {
+      byte* colour = image.data.data()+x;
+      float da = float(colour[3])/255.0;
+      float a  = sa+da*(1-sa);
+      if(a<=1.0/255.0)
+      {
+        colour[0]=0;
+        colour[1]=0;
+        colour[2]=0;
+        colour[3]=0;
+      }
+      else
+      {
+        colour[0]=r(((colour[0]*sa)+(this->colour[0]*da*(1-sa)))/a);
+        colour[1]=r(((colour[1]*sa)+(this->colour[1]*da*(1-sa)))/a);
+        colour[2]=r(((colour[2]*sa)+(this->colour[2]*da*(1-sa)))/a);
+        colour[3]=r(a*255);
       }
     }
   }

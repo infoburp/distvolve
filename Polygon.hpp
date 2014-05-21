@@ -2,6 +2,7 @@
 #define POLYGON_HPP_INCLUDED
 #include <vector>
 #include <functional>
+#include <fstream>
 
 typedef unsigned short dimension;
 typedef unsigned char byte;
@@ -18,12 +19,13 @@ public:
 
 class Polygon {
 public:
-  Polygon(byte serialized[],int location); //TODO create second constructor
+  Polygon(dimension width,dimension height,std::ifstream &stream);
   Polygon(dimension width,dimension height,float load,std::function <float()> rand);//random
 
   void drawInternal();
 
   void drawOn(Image &on,Image &from);
+  void drawOnFromDna(Image &on);
   bool drawOnIfBetter(Image &on,Image &from);
 
   unsigned int fitness(byte* one,byte* two);

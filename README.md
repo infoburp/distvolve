@@ -15,11 +15,16 @@ There are no binarys available at this time. It is reccomended to build this pro
 
 ### TODO ###
 
+- Proper Fitness
+- automatic detal stop
+- max poly count
+- poly optimization
 - Work distribution
 - Load more than a PNG
 - DNA loading / saving
 - SVG saving
 - GUI
+- Commented code
 
 ### Commands ###
 
