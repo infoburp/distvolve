@@ -4,4 +4,4 @@ for f in *.png; do
 ./distvolve l $f b 8 s rendered.$f  
 done
 
-ffmpeg -i %05d.render.png output.mp4
+ffmpeg -i rendered.%05d.png output.mp4
