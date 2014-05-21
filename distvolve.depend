@@ -1,7 +1,7 @@
 # depslib dependency file v1.0
-1400635787 source:d:\cbb\distvolve\main.cpp
+1400664000 source:d:\cbb\distvolve\main.cpp
 	<iostream>
-	<stdlib.h>
+	<cstdlib>
 	<lodepng.h>
 	<Polygon.hpp>
 	<ThreadWorker.hpp>
@@ -11,6 +11,9 @@
 	<fstream>
 	<algorithm>
 	<thread>
+	<queue>
+	<sstream>
+	<windows.h>
 
 1399978728 d:\cbb\distvolve\\cimg.h
 	<cstdio>
@@ -62,7 +65,7 @@
 	"CImg.h"
 	<stdint.h>
 
-1400638067 source:d:\cbb\distvolve\polygon.cpp
+1400663431 source:d:\cbb\distvolve\polygon.cpp
 	<Polygon.hpp>
 	<iostream>
 	<algorithm>
@@ -97,7 +100,7 @@
 	<iostream>
 	"lodepng.h"
 
-1400633980 source:d:\cbb\distvolve\threadworker.cpp
+1400656024 source:d:\cbb\distvolve\threadworker.cpp
 	<Polygon.hpp>
 	<mutex>
 	<atomic>

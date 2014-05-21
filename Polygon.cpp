@@ -38,7 +38,7 @@ vector<byte> Polygon::serialize()
   r.push_back(this->colour[1]);
   r.push_back(this->colour[2]);
   r.push_back(this->colour[3]);
-  for(int i = 0; i<this->points.size();i++)
+  for(unsigned i = 0; i<this->points.size();i++)
   {
     pushBackDimension(r,&(this->points[i]));
   }
@@ -86,12 +86,12 @@ Polygon::Polygon(dimension width,dimension height,float load,std::function <floa
   this->points.resize(6,0);
 
   vector<dimension>p(3);
-  p[0]=this->random(0,width-1);
+  p[0]=this->random(1,width-1);
   p[1]=p[0]+rd(rand()*load*width);
-  if(p[1]<0)p[1]=0;
+  if(p[1]<=0)p[1]=1;
   if(p[1]>=width)p[1]=width-1;
   p[2]=p[0]+rd(rand()*load*width);
-  if(p[2]<0)p[2]=0;
+  if(p[2]<=0)p[2]=1;
   if(p[2]>=width)p[2]=width-1;
 
   byte n=0;
@@ -107,12 +107,12 @@ Polygon::Polygon(dimension width,dimension height,float load,std::function <floa
   this->points[4]=p[1];
 
   vector<dimension>o(3);
-  o[0]=this->random(0,height-1);
+  o[0]=this->random(1,height-1);
   o[1]=o[0]+rd(rand()*load*height);
-  if(o[1]<0)o[1]=0;
+  if(o[1]<=0)o[1]=1;
   if(o[1]>=height)o[1]=height-1;
   o[2]=o[0]+rd(rand()*load*height);
-  if(o[2]<0)o[2]=0;
+  if(o[2]<=0)o[2]=1;
   if(o[2]>=height)o[2]=height-1;
 
   if(o[0]<o[1])
@@ -167,7 +167,7 @@ bool Polygon::drawOnIfBetter(Image &outImage,Image &from)
   writingData.lock();
   readingData++;
   writingData.unlock();
-  for(int x=0;x<image.data.size();x+=4)
+  for(unsigned x=0;x<image.data.size();x+=4)
     {
     byte* colour = image.data.data()+x;
     byte* outColour = outImage.data.data()+x;
@@ -195,7 +195,7 @@ bool Polygon::drawOnIfBetter(Image &outImage,Image &from)
       newFitness+=Polygon::fitness(original,colour);
     }
     else
-    {
+    { // @unrelated-comment Pahimar is awesome
       colour[0]=outColour[0];
       colour[1]=outColour[1];
       colour[2]=outColour[2];

@@ -20,26 +20,13 @@ extern atomic<bool> run;
 void doWork(char* identifier)
 {
   float currentPolySize=.8;
-  map<int,float> polySize;
-  polySize[       0]=.80;
-  polySize[    1000]=.70;
-  polySize[   10000]=.50;
-  polySize[   50000]=.40;
-  polySize[  100000]=.35;
-  polySize[  500000]=.28;
-  polySize[ 1000000]=.2;
-  polySize[ 4000000]=.1;
 
+  int numFails=0;
   srand(time(NULL));
   default_random_engine generator;
   normal_distribution<float> distribution(0.0,0.7);
   while(run)
   {
-    if(polySize.begin()->first >= generations)
-    {
-      currentPolySize = polySize.begin()->second;
-      polySize.erase(polySize.begin());
-    }
     distvolve::Polygon poly(inputImage.width,inputImage.height,currentPolySize,[&distribution,&generator]()->float {return distribution(generator);});
     poly.drawInternal();
     if(poly.drawOnIfBetter(outputImage,inputImage))
@@ -49,6 +36,16 @@ void doWork(char* identifier)
       polys.insert(polys.end(),vNewPoly.begin(),vNewPoly.end());
       mPoly.unlock();
       polygons++;
+      numFails=0;
+    }
+    else
+    {
+      if(numFails++>400)
+      {
+        currentPolySize*=.08;
+        cout << "Dropped to " << currentPolySize << "\n";
+        numFails=0;
+      }
     }
     generations++;
   }
